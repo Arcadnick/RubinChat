@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Messenger — Чат</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="chat-layout">
+    <header class="chat-header">
+      <span class="user-info">Вы: <strong id="current-username"></strong></span>
+      <a href="index.html" class="logout">Выйти</a>
+    </header>
+    <aside class="users-panel">
+      <h2>Пользователи</h2>
+      <ul id="users-list"></ul>
+    </aside>
+    <main class="chat-main">
+      <div class="chat-with">
+        <span id="chat-with-name">Выберите пользователя</span>
+      </div>
+      <ul id="messages-list" class="messages-list"></ul>
+      <div class="input-row">
+        <input type="text" id="message-input" placeholder="Сообщение..." autocomplete="off">
+        <button type="button" id="send-btn">Отправить</button>
+      </div>
+    </main>
+  </div>
+  <script src="chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Messenger — Вход</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Secure Messenger</h1>
+    <p class="subtitle">ГОСТ-шифрование</p>
+
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="login">Вход</button>
+      <button type="button" class="tab" data-tab="register">Регистрация</button>
+    </div>
+
+    <form id="login-form" class="form active">
+      <input type="text" name="username" placeholder="Имя пользователя" required autocomplete="username">
+      <input type="password" name="password" placeholder="Пароль" required autocomplete="current-password">
+      <button type="submit">Войти</button>
+      <p id="login-error" class="error hidden"></p>
+    </form>
+
+    <form id="register-form" class="form">
+      <input type="text" name="username" placeholder="Имя пользователя" required autocomplete="username">
+      <input type="password" name="password" placeholder="Пароль" required autocomplete="new-password">
+      <button type="submit">Зарегистрироваться</button>
+      <p id="register-error" class="error hidden"></p>
+    </form>
+  </div>
+  <script src="auth.js"></script>
+</body>
+</html>
