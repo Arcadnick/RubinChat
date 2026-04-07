@@ -121,3 +121,34 @@ RubinChat/                 # корень проекта
 - Первая миграция: `backend/alembic/versions/001_initial.py`.
 - Применить: `docker-compose exec backend alembic upgrade head`.
 - Создать новую (из каталога backend): `alembic revision --autogenerate -m "описание"`.
+
+## HTTPS для timeofthestars.online
+
+1. Убедиться, что DNS `A` записи `timeofthestars.online` и `www.timeofthestars.online` указывают на IP сервера.
+2. На сервере установить certbot:
+   ```bash
+   sudo apt update && sudo apt install -y certbot
+   ```
+3. Остановить nginx-контейнер на время выдачи сертификата:
+   ```bash
+   docker compose stop nginx
+   ```
+4. Выпустить сертификат:
+   ```bash
+   sudo certbot certonly --standalone \
+     -d timeofthestars.online \
+     -d www.timeofthestars.online \
+     --agree-tos -m YOUR_EMAIL --non-interactive
+   ```
+5. Поднять сервисы:
+   ```bash
+   docker compose up -d --build
+   ```
+
+Продление сертификатов (cron):
+```bash
+sudo crontab -e
+```
+```cron
+0 3 * * * docker compose -f /path/to/RubinChat/docker-compose.yml stop nginx && certbot renew --quiet && docker compose -f /path/to/RubinChat/docker-compose.yml start nginx
+```
