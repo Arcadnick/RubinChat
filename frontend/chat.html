@@ -8,16 +8,16 @@
 </head>
 <body>
   <div class="chat-layout">
-    <header class="chat-header">
-      <span class="user-info">Вы: <strong id="current-username"></strong></span>
-      <a href="index.html" class="logout">Выйти</a>
-    </header>
     <aside class="users-panel">
-      <h2>Пользователи</h2>
+      <div class="sidebar-top">
+        <div class="sidebar-title">RubinChat</div>
+        <div class="sidebar-subtitle">Вы: <strong id="current-username"></strong></div>
+      </div>
       <ul id="users-list"></ul>
+      <a href="index.html" class="logout">Выйти</a>
     </aside>
     <main class="chat-main">
-      <div class="chat-with">
+      <div class="chat-header">
         <span id="chat-with-name">Выберите пользователя</span>
       </div>
       <ul id="messages-list" class="messages-list"></ul>

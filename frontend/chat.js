@@ -2,6 +2,7 @@
   const API_BASE = "/api";
   const TOKEN_KEY = "token";
   const WS_BASE = (window.location.protocol === "https:" ? "wss:" : "ws:") + "//" + window.location.host + "/ws";
+  const USERS_REFRESH_MS = 5000;
 
   function getToken() {
     return localStorage.getItem(TOKEN_KEY);
@@ -26,6 +27,7 @@
   const token = getToken();
   let currentUser = null;
   let selectedUserId = null;
+  let selectedUsername = "";
   let ws = null;
 
   function authHeaders() {
@@ -73,18 +75,31 @@
     ul.innerHTML = "";
     users.forEach(function (u) {
       const li = document.createElement("li");
+      li.classList.add("user-item");
       li.dataset.userId = u.id;
-      li.textContent = u.username;
+      li.innerHTML = "<span class=\"name\">" + escapeHtml(u.username) + "</span>";
       if (selectedUserId === u.id) li.classList.add("selected");
       li.addEventListener("click", function () {
         selectUser(u.id, u.username);
       });
       ul.appendChild(li);
     });
+
+    if (selectedUserId && !users.some(function (u) { return u.id === selectedUserId; })) {
+      selectedUserId = null;
+      selectedUsername = "";
+      document.getElementById("chat-with-name").textContent = "Выберите пользователя";
+      document.getElementById("messages-list").innerHTML = "";
+    }
+
+    if (!selectedUserId && users.length > 0) {
+      selectUser(users[0].id, users[0].username);
+    }
   }
 
   function selectUser(userId, username) {
     selectedUserId = userId;
+    selectedUsername = username;
     document.getElementById("chat-with-name").textContent = "Чат с " + username;
     document.querySelectorAll("#users-list li").forEach(function (li) {
       li.classList.toggle("selected", li.dataset.userId === userId);
@@ -98,7 +113,7 @@
     messages.forEach(function (m) {
       const li = document.createElement("li");
       li.classList.add(m.sender_id === currentUser.id ? "sent" : "received");
-      const who = m.sender_id === currentUser.id ? "Вы" : "Собеседник";
+      const who = m.sender_id === currentUser.id ? "Вы" : (selectedUsername || "Собеседник");
       const sig = m.signature_valid ? "" : " (подпись не проверена)";
       li.innerHTML = "<span class=\"who\">" + who + sig + "</span><span class=\"text\">" + escapeHtml(m.payload) + "</span>";
       ul.appendChild(li);
@@ -116,6 +131,13 @@
     if (!selectedUserId) return;
     const messages = await loadMessages(selectedUserId);
     renderMessages(messages);
+  }
+
+  async function refreshUsers() {
+    try {
+      const users = await loadUsers();
+      renderUsers(users);
+    } catch (_) {}
   }
 
   async function sendMessage() {
@@ -146,9 +168,10 @@
       try {
         const data = JSON.parse(event.data);
         if (data.type === "new_message" && data.sender_id && data.message_id) {
-          if (data.sender_id === selectedUserId || data.receiver_id === currentUser.id) {
+          if (data.sender_id === selectedUserId) {
             loadAndRenderMessages();
           }
+          refreshUsers();
         }
       } catch (_) {}
     };
@@ -170,8 +193,8 @@
 
   (async function init() {
     await loadMe();
-    const users = await loadUsers();
-    renderUsers(users);
+    await refreshUsers();
     connectWs();
+    setInterval(refreshUsers, USERS_REFRESH_MS);
   })();
 })();
