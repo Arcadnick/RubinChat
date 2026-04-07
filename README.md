@@ -34,23 +34,23 @@
    docker-compose exec backend alembic upgrade head
    ```
 
-5. Открыть в браузере: http://localhost:8000  
-   (Frontend раздаётся тем же backend; логин/регистрация на главной, затем чат.)
+5. Открыть в браузере: http://localhost  
+   (Запросы проходят через Nginx reverse proxy, затем в backend.)
 
 ## Примеры API
 
-Базовый URL: `http://localhost:8000/api` (если без прокси).
+Базовый URL: `http://localhost/api` (через Nginx).
 
 ### Регистрация
 ```bash
-curl -X POST http://localhost:8000/api/auth/register \
+curl -X POST http://localhost/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username": "alice", "password": "secret"}'
 ```
 
 ### Вход
 ```bash
-curl -X POST http://localhost:8000/api/auth/login \
+curl -X POST http://localhost/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "alice", "password": "secret"}'
 # В ответе: {"access_token": "...", "token_type": "bearer"}
@@ -58,17 +58,17 @@ curl -X POST http://localhost:8000/api/auth/login \
 
 ### Текущий пользователь
 ```bash
-curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000/api/users/me
+curl -H "Authorization: Bearer <TOKEN>" http://localhost/api/users/me
 ```
 
 ### Список пользователей
 ```bash
-curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000/api/users
+curl -H "Authorization: Bearer <TOKEN>" http://localhost/api/users
 ```
 
 ### Отправка сообщения
 ```bash
-curl -X POST http://localhost:8000/api/messages \
+curl -X POST http://localhost/api/messages \
   -H "Authorization: Bearer <TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"receiver_id": "<UUID_ПОЛУЧАТЕЛЯ>", "payload": "Текст сообщения"}'
@@ -76,11 +76,11 @@ curl -X POST http://localhost:8000/api/messages \
 
 ### Получение сообщений (диалог с пользователем)
 ```bash
-curl -H "Authorization: Bearer <TOKEN>" "http://localhost:8000/api/messages?with_user=<UUID>"
+curl -H "Authorization: Bearer <TOKEN>" "http://localhost/api/messages?with_user=<UUID>"
 ```
 
 ### WebSocket (уведомления о новых сообщениях)
-Подключение: `ws://localhost:8000/ws?token=<JWT>`. При появлении нового сообщения сервер шлёт JSON: `{"type": "new_message", "message_id": "...", "sender_id": "..."}`.
+Подключение: `ws://localhost/ws?token=<JWT>`. При появлении нового сообщения сервер шлёт JSON: `{"type": "new_message", "message_id": "...", "sender_id": "..."}`.
 
 ## Архитектура
 
